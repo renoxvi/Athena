@@ -1,0 +1,13 @@
+                                                                                                                                                                                                    
+┌──(venv)─(patrickojiambo㉿PashKali)-[~/Documents/BookApp/onchain/sandbox]
+└─$ ./sandbox goal account list
+[offline]       HEKBPBB4S4RDB2KBLBYC6OOCHLMMZUKI3YPYQA6S3T7566BNLEC3CCRHBU      HEKBPBB4S4RDB2KBLBYC6OOCHLMMZUKI3YPYQA6S3T7566BNLEC3CCRHBU      4000000000000000 microAlgos
+[online]        Q2X2YAB4FC225H436G4PC25Q242D4XVG4WNWMMYQC4VXJX7RMUUNDG7MPM      Q2X2YAB4FC225H436G4PC25Q242D4XVG4WNWMMYQC4VXJX7RMUUNDG7MPM      4000000000000000 microAlgos
+[offline]       SXGCU6ZXQIRYWGJN3JTNCCVZWTYRS2XI2TWQUR4GU7ZNLUDKYKUBWBE2YA      SXGCU6ZXQIRYWGJN3JTNCCVZWTYRS2XI2TWQUR4GU7ZNLUDKYKUBWBE2YA      1000000000000000 microAlgos
+Example command to send between two accounts:
+~$ ./sandbox goal clerk send -a 123456789 -f Q2X2YAB4FC225H436G4PC25Q242D4XVG4WNWMMYQC4VXJX7RMUUNDG7MPM -t SXGCU6ZXQIRYWGJN3JTNCCVZWTYRS2XI2TWQUR4GU7ZNLUDKYKUBWBE2YA
+
+Soon after sending the transaction it will appear in indexer:
+~$ curl "localhost:8980/v2/transactions?pretty"
+
+./sandbox goal app create --creator Q2X2YAB4FC225H436G4PC25Q242D4XVG4WNWMMYQC4VXJX7RMUUNDG7MPM --approval-prog bookshop_approval.teal --clear-prog bookshop_clear.teal --note bookshop-marketplace:uv1 --global-byteslices 3 --global-ints 2 --local-byteslices 0 --local-ints 0 --app-arg str:TestName --app-arg str:TestBookId --app-arg str:TestImage --app-arg str:Testserial_no --app-arg int:1000000

@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                  String        @id @default(cuid())
+  name                String?
+  username            String?
+  email               String?       @unique
+  emailVerified       DateTime?
+  image               String?
+  created_at          DateTime?     @default(now())
+  accounts            Account[]
+  sessions            Session[]
+  encryptedPrivateKey String?
+  publicKey           String?
+  walletAddress       String?
+  publications        Publication[]
+  purchases           Purchase[]
+  events              UserEvent[]
+  comments            Comment[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum PublicationStatus {
+  published
+  draft
+  archived
+}
+
+model Publication {
+  id          String            @id @default(cuid())
+  name        String?
+  description String?
+  creator     User?             @relation(references: [id], fields: [creator_id])
+  creator_id  String
+  price       Float             @default(0)
+  genre       String?
+  status      PublicationStatus @default(draft)
+  cover       String?
+  file_url    String?
+  pages       Int               @default(0)
+  tags        String
+  purchases   Purchase[]
+  events      UserEvent[]
+  created_at  DateTime          @default(now())
+  comments    Comment[]
+}
+
+model Purchase {
+  id             String       @id @default(cuid())
+  user_id        String
+  user           User?        @relation(references: [id], fields: [user_id])
+  publication_id String
+  publication    Publication? @relation(references: [id], fields: [publication_id])
+  created_at     DateTime     @default(now())
+}
+
+enum UserEventType {
+  read
+  save
+}
+
+model UserEvent {
+  id             String        @id @default(cuid())
+  type           UserEventType
+  publication_id String
+  publication    Publication?  @relation(references: [id], fields: [publication_id])
+  user_id        String
+  user           User?         @relation(references: [id], fields: [user_id])
+  created_at     DateTime      @default(now())
+}
+
+model Comment {
+  id             String       @id @default(cuid())
+  content        String
+  user_id        String
+  user           User?        @relation(references: [id], fields: [user_id])
+  publication_id String
+  publication    Publication? @relation(references: [id], fields: [publication_id])
+}
